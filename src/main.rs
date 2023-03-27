@@ -48,7 +48,7 @@ fn get_urls_for_env(env: &str) -> Vec<&str> {
         "prod" => {
             let urls = vec![
                 "https://api.eastcoast-online.net/version",
-                "https://dev.eastcoast-online.net",
+                "https://eastcoast-online.net",
                 "https://app.eastcoastexpress.net/api/v2/version",
                 "https://evac-api.eastcoast-online.net/api/version",
                 "https://new.eastcoast-online.net/"
