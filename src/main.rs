@@ -21,51 +21,38 @@ async fn main() -> Result<()> {
     return Ok(());
 }
 
-fn get_urls_for_env(env: &str) -> Vec<&str> {
-    let urls = match env {
-        "dev" => {
-            let urls = vec![
-                "https://api-dev.eastcoast-online.net/version",
-                "https://dev.eastcoast-online.net",
-                "https://app-dev.eastcoastexpress.net/api/v2/version",
-                "https://dev-evac-api.eastcoast-online.net/api/version",
-                "https://new-dev.eastcoast-online.net/"
-            ];
-            
-            urls
-        },
-        "stage" => {
-            let urls = vec![
-                "https://api-stage.eastcoast-online.net/version",
-                "https://stage.eastcoast-online.net",
-                "https://app-stage.eastcoastexpress.net/api/v2/version",
-                "https://stage-evac-api.eastcoast-online.net/api/version",
-                "https://new-stage.eastcoast-online.net/"
-            ];
-            
-            urls
-        },
-        "prod" => {
-            let urls = vec![
-                "https://api.eastcoast-online.net/version",
-                "https://eastcoast-online.net",
-                "https://app.eastcoastexpress.net/api/v2/version",
-                "https://evac-api.eastcoast-online.net/api/version",
-                "https://new.eastcoast-online.net/"
-            ];
-            
-            urls
-        }
-        _ => {
-            panic!("Unknown env");
-        }
+fn generate_vec(env: &str) -> Vec<String> {
+    let env_str = match env {
+        "dev" => "-dev",
+        "stage" => "-stage",
+        _ => ""
     };
 
+    let dot = match env_str {
+        "" => "",
+        _ => "."
+    };
+
+    let dash = match env_str {
+        "" => "",
+        _ => "-"
+    };
+    let urls = vec![
+        format!("https://api{}.eastcoast-online.net/version", env_str),
+        format!("https://{}{}eastcoast-online.net", env_str.replace("-", ""), dot),
+        format!("https://app{}.eastcoastexpress.net/api/v2/version", env_str),
+        format!("https://{}{}evac-api.eastcoast-online.net/api/version", env_str.replace("-",""), dash),
+        format!("https://new{}.eastcoast-online.net/", env_str)
+    ];
+    return urls;
+}
+fn get_urls_for_env(env: &str) -> Vec<String> {
+    let urls = generate_vec(env);
     return urls;
 }
 
-async fn check_url(url: &str) {
-    let res = HealthCheckResult::new(url).await;
+async fn check_url(url: String) {
+    let res = HealthCheckResult::new(&url).await;
     if res.is_err() {
         println!("{} Failed.", url);
         return;
